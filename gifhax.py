@@ -22,14 +22,16 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 <title>gifs</title>
 </head>
 <body>
-<h1>gifs go here</h1>
+<p><a href="/f">NOPE</a>
+<p>
 %s
 </body>""" % "\n".join('<a href="/g/%d"><img src="%s" width="%dpx" height="%dpx"></a>' % (i, u, w, h) for (i, (_, (u, w, h))) in enumerate(self.server.urls)))
-        elif self.path.startswith("/g/"):
-            try:
-                self.server.chosen = int(self.path[3:])
-            except:
-                pass
+        elif self.path.startswith("/f") or self.path.startswith("/g/"):
+            if self.path[1] == "g":
+                try:
+                    self.server.chosen = int(self.path[3:])
+                except:
+                    pass
             self.send_response(200)
             self.send_header("Content-Type", "text/plain; encoding=utf-8")
             self.end_headers()
@@ -41,7 +43,7 @@ class MyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 def server_thread(httpd, on_finished):
     while not httpd.done:
         httpd.handle_request()
-    on_finished(httpd.urls[httpd.chosen][0])
+    on_finished(httpd.urls[httpd.chosen][0] if httpd.chosen != -1 else None)
 
 def run_server(server_class=BaseHTTPServer.HTTPServer,
                handler_class=MyRequestHandler,
